@@ -173,32 +173,27 @@ public class GUI extends JFrame implements ActionListener {
     private void addUser() {
         String username = "";
         Double price = 0.0;   
-        boolean userExists = false;
-
+        
         if (!priceInput.getText().isEmpty()) { // Borrowed Mr Crow's code
             User newUser = null;
             try {
                 username = nameInput.getText().trim();
                 price = Double.parseDouble(priceInput.getText().trim());
                 if (price > 0 && price < 15) {
-                    
-                    if (!userExists) {
-                        newUser = new LightSpender(username, price);
-                        usersList.add(newUser);
-                    }
+                                            
+                    newUser = new LightSpender(username, price);
+                    usersList.add(newUser);
+
 
                 } else if (price >= 15 && price < 40) {
 
-                    if (!userExists) {
-                        newUser = new AverageSpender(username, price);
-                        usersList.add(newUser);
-                    }
+                    newUser = new AverageSpender(username, price);
+                    usersList.add(newUser);
 
                 } else if (price >= 40) {
-                    if (!userExists) {
-                        newUser = new BigSpender(username, price);
-                        usersList.add(newUser);
-                    }
+                    newUser = new BigSpender(username, price);
+                    usersList.add(newUser);
+                    
                 }
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Invalid value. Please enter a number.", "Input Error", JOptionPane.WARNING_MESSAGE);
