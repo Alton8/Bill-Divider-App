@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import javax.swing.table.DefaultTableModel;
 // import java.awt.event.ActionListener;
 import java.util.ArrayList;
 // import java.awt.event.ActionListener;
@@ -11,13 +12,15 @@ public class GUI extends JFrame implements ActionListener {
     
     private ArrayList<User> usersList; // ArrayList to hold all of the people
 
+    String[] beforeColumnNames = new String[]{"Name", "Item Price"};
+    String[] afterColumnNames = new String[]{"Name", "Item Price", "Analysis"};
+
+    private DefaultTableModel dtm;
+    private JTable table;
     private JButton finishButton;
     private JButton addButton;
     private JTextField nameInput;
     private JTextField priceInput;
-    private JTextArea resultText;
-    // private JList <User> users;
-    private DefaultListModel <User> listModel; // idk?? but Mr.Crow used it
 
     public GUI() {
 
@@ -25,10 +28,14 @@ public class GUI extends JFrame implements ActionListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Close operation
         setSize(500, 400); // Increased window size
         setLocationRelativeTo(null); // Center the window
+        
+        //Youtube Tutorial
+        dtm = new DefaultTableModel(beforeColumnNames, 0);
+        table = new JTable();
+        table.setModel(dtm);
+        
 
         //Initialize the ArrayList
-        listModel = new DefaultListModel<>();
-        // users = new JList<>(listModel);
         usersList = new ArrayList<>();
   
         //Create the button
@@ -41,8 +48,6 @@ public class GUI extends JFrame implements ActionListener {
         addButton.addActionListener(this);
         finishButton.addActionListener(this);
 
-        resultText = new JTextArea();
-        JScrollPane scrollPane = new JScrollPane(resultText); // Add JList to a scroll pane
         //Extra stuff
         JPanel inputPanel = new JPanel(new FlowLayout()); // Use FlowLayout for simplicity
         nameInput = new JTextField(15);
@@ -59,7 +64,7 @@ public class GUI extends JFrame implements ActionListener {
         setLayout(new BorderLayout());
 
         add(inputPanel, BorderLayout.NORTH); // Input at the top
-        add(scrollPane, BorderLayout.CENTER);
+        add(new JScrollPane(table), BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH); // Finish button on bottom
         setVisible(true); 
     }
@@ -79,19 +84,14 @@ public class GUI extends JFrame implements ActionListener {
 
     private void addUser() {
 
-        String username = nameInput.getText().trim();
-        Double price;   
+        String username = "";
+        Double price = 0.0;   
         boolean userExists = false;
         if (!priceInput.getText().isEmpty()) { // Borrowed Mr Crow's code
             User newUser = null;
             try {
+                username = nameInput.getText().trim();
                 price = Double.parseDouble(priceInput.getText().trim());
-                for (User user : usersList) {
-                    if (user.getName().equals(username)) {
-                        user.increasePrice(price);
-                        userExists = true;
-                    }
-                }
                 if (price >= 1 && price < 15) {
                     
                     if (!userExists) {
@@ -101,6 +101,7 @@ public class GUI extends JFrame implements ActionListener {
 
                     System.out.println(usersList.toString());
                 } else if (price >= 15 && price < 40) {
+
                     if (!userExists) {
                         newUser = new AverageSpender(username, price);
                         usersList.add(newUser);
@@ -119,7 +120,6 @@ public class GUI extends JFrame implements ActionListener {
                 return; // Stop adding task if priority is invalid
             }
         }
-        
         updateScreen();
         nameInput.setText(""); // Clear input fields
         priceInput.setText(""); // Clear input fields
@@ -129,19 +129,42 @@ public class GUI extends JFrame implements ActionListener {
     }
     
     private void displayResults() {
-        listModel.clear();
-        String totalText = "";
-        for (User user : usersList) {
-            totalText += user + "   " + user.funnyMessage() + "\n";
+
+        for (int i = 0; i < usersList.size(); i++) {
+            User user = usersList.get(i);
+            for (int j = i + 1; j < usersList.size(); j++) {
+                User currentUser = usersList.get(j);
+                // Check for duplicates by comparing names
+                if (user.getName().equalsIgnoreCase(currentUser.getName())) {
+                    // Increase the price of the first user
+                    user.increasePrice(currentUser.getPrice());
+                    // Remove the duplicate user
+                    usersList.remove(j);
+                    // Adjust the loop counter since we've removed an element
+                    j--; 
+                }
+            }
         }
-        resultText.setText(totalText);
+
+        System.out.println(usersList);
+
+        DefaultTableModel newDtm = new DefaultTableModel(afterColumnNames, 0);
+        for (User user : usersList) {
+            String[] finalAllUsers = {user.getName(), user.getStringPrice(), user.funnyMessage()};
+            newDtm.addRow(finalAllUsers);
+        }
+        table.setModel(newDtm);
+
+
     }
     private void updateScreen() {
-        listModel.clear();
-        
+
+        dtm.setRowCount(0);
         for (User user : usersList) {
-            resultText.setText(user + "\n"); 
-        }
+            String[] allUsers = {user.getName(), user.getStringPrice()};
+            dtm.addRow(allUsers);
+        }  
+
     }
      
         
