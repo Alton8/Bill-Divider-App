@@ -18,6 +18,6 @@ public class BigSpender extends User {
     }
     
     public String funnyMessage() {
-        return quotes.get((int)(Math.random() * 6));
+        return quotes.get((int)(Math.random() * 5));
     }
 }
