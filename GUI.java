@@ -13,12 +13,14 @@ public class GUI extends JFrame implements ActionListener {
     private ArrayList<User> usersList; // ArrayList to hold all of the people
 
     String[] beforeColumnNames = new String[]{"Name", "Item Price"};
-    String[] afterColumnNames = new String[]{"Name", "Item Price", "Analysis"};
+    String[] afterColumnNames = new String[]{"Name", "Total Owed", "Analysis"};
 
     private DefaultTableModel dtm;
     private JTable table;
     private JButton finishButton;
     private JButton addButton;
+    private JButton deleteButton;
+    private JButton retryButton;
     private JTextField nameInput;
     private JTextField priceInput;
 
@@ -41,26 +43,36 @@ public class GUI extends JFrame implements ActionListener {
         //Create the button
         addButton = new JButton("Enter"); 
         addButton.setPreferredSize(new Dimension(100, 50));
-        
+        retryButton = new JButton("Retry");
+        retryButton.setPreferredSize(new Dimension(100,50));
         finishButton = new JButton("Finish");
         finishButton.setPreferredSize(new Dimension(100, 50));
+        deleteButton = new JButton("Delete");
+        deleteButton.setPreferredSize(new Dimension(100,50));
 
         addButton.addActionListener(this);
+        retryButton.addActionListener(this);
         finishButton.addActionListener(this);
+        deleteButton.addActionListener(this);
 
         //Extra stuff
         JPanel inputPanel = new JPanel(new FlowLayout()); // Use FlowLayout for simplicity
         nameInput = new JTextField(15);
         nameInput.setToolTipText("Enter a name"); // Tooltip
         priceInput = new JTextField(8);
+        priceInput.setToolTipText("Enter the price of the item");
         inputPanel.add(new JLabel("Name:"));
         inputPanel.add(nameInput);
         inputPanel.add(new JLabel("Price: "));
         inputPanel.add(priceInput);
         inputPanel.add(addButton);
+        inputPanel.add(deleteButton);
         
         JPanel bottomPanel = new JPanel(new FlowLayout());
         bottomPanel.add(finishButton);
+        bottomPanel.add(retryButton);
+        retryButton.setVisible(false);
+
         setLayout(new BorderLayout());
 
         add(inputPanel, BorderLayout.NORTH); // Input at the top
@@ -76,30 +88,46 @@ public class GUI extends JFrame implements ActionListener {
         if (e.getSource() == addButton) {
             addUser();
         } else if (e.getSource() == finishButton) {
-            displayResults();
-            finishButton.setVisible(false);
-
+            if (dtm.getRowCount() < 1) {
+                JOptionPane.showMessageDialog(this, "Unable to calculate. Please enter at least one entry.", "Input Error", JOptionPane.WARNING_MESSAGE);
+            } else {
+                displayResults();
+            }
+        } else if (e.getSource() == retryButton) {
+            resetScreen();
+        } else if (e.getSource() == deleteButton) {
+            deleteEntry();
         }
     }
 
-    private void addUser() {
+    private void resetScreen() {
+        dtm.setRowCount(0);
+        usersList.clear();
+        table.setModel(dtm);
+        addButton.setVisible(true);
+        finishButton.setVisible(true);
+        retryButton.setVisible(false);
+        nameInput.setVisible(true);
+        priceInput.setVisible(true);
+    }
 
+    private void addUser() {
         String username = "";
         Double price = 0.0;   
         boolean userExists = false;
+
         if (!priceInput.getText().isEmpty()) { // Borrowed Mr Crow's code
             User newUser = null;
             try {
                 username = nameInput.getText().trim();
                 price = Double.parseDouble(priceInput.getText().trim());
-                if (price >= 1 && price < 15) {
+                if (price > 0 && price < 15) {
                     
                     if (!userExists) {
                         newUser = new LightSpender(username, price);
                         usersList.add(newUser);
                     }
 
-                    System.out.println(usersList.toString());
                 } else if (price >= 15 && price < 40) {
 
                     if (!userExists) {
@@ -112,24 +140,33 @@ public class GUI extends JFrame implements ActionListener {
                         newUser = new BigSpender(username, price);
                         usersList.add(newUser);
                     }
-
-
                 }
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Invalid value. Please enter a number.", "Input Error", JOptionPane.WARNING_MESSAGE);
                 return; // Stop adding task if priority is invalid
             }
         }
+
         updateScreen();
         nameInput.setText(""); // Clear input fields
         priceInput.setText(""); // Clear input fields
-        
-    
-      
     }
-    
-    private void displayResults() {
+    private void deleteEntry() {
+        int selectedIndex = table.getSelectedRow();
 
+        if (selectedIndex >= 0) {
+            int dialogButton = JOptionPane.YES_NO_OPTION;
+            int dialogResult = JOptionPane.showConfirmDialog(this, "Delete this entry", getTitle(), dialogButton);
+            if (dialogResult == 0) {
+                ((DefaultTableModel)table.getModel()).removeRow(selectedIndex);
+                usersList.remove(selectedIndex);
+                updateScreen();
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Please select an entry to delete.", "Selection Error", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    private void displayResults() {
         for (int i = 0; i < usersList.size(); i++) {
             User user = usersList.get(i);
             for (int j = i + 1; j < usersList.size(); j++) {
@@ -145,18 +182,20 @@ public class GUI extends JFrame implements ActionListener {
                 }
             }
         }
-
-        System.out.println(usersList);
-
         DefaultTableModel newDtm = new DefaultTableModel(afterColumnNames, 0);
         for (User user : usersList) {
             String[] finalAllUsers = {user.getName(), user.getStringPrice(), user.funnyMessage()};
             newDtm.addRow(finalAllUsers);
         }
         table.setModel(newDtm);
-
-
+        finishButton.setVisible(false);
+        addButton.setVisible(false);
+        retryButton.setVisible(true);  
+        deleteButton.setVisible(false);
+        nameInput.setVisible(false);
+        priceInput.setVisible(false);
     }
+
     private void updateScreen() {
 
         dtm.setRowCount(0);
@@ -166,9 +205,6 @@ public class GUI extends JFrame implements ActionListener {
         }  
 
     }
-     
-        
-    
     public static void main(String[] args) { 
         new GUI();
     }
