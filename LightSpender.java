@@ -11,10 +11,11 @@ public class LightSpender extends User {
         quotes = new ArrayList<>();
 
         quotes.add("Cheep, cheep cheep cheep! Oh is that a bird? Oh no sorry that's just you");
-        quotes.add("Frugal and fabulous 💅");
-        quotes.add("Contributing spiritually, and not financially");
+        quotes.add("Nice.");
+        quotes.add("Contributing spiritually, but not financially");
         quotes.add("Big spender alert! Just kidding, that was someone else.");
-        quotes.add("Your fork worked harder on my plate than your card did on the bill.");
+        quotes.add("Honestly, just say you weren’t hungry next time.");
+        quotes.add("Not sure if that was dinner or a vending machine run.");
 
     }
 
