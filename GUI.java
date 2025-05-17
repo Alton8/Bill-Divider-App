@@ -2,9 +2,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import javax.swing.table.DefaultTableModel;
-// import java.awt.event.ActionListener;
+import java.util.Collections;
+import java.util.Comparator;
+
 import java.util.ArrayList;
-// import java.awt.event.ActionListener;
 import java.awt.event.ActionListener;
 // import java.util.concurrent.Flow;
 
@@ -15,8 +16,13 @@ public class GUI extends JFrame implements ActionListener {
     String[] beforeColumnNames = new String[]{"Name", "Item Price"};
     String[] afterColumnNames = new String[]{"Name", "Total Owed", "Analysis"};
 
+    private JComboBox<String> sortBox;
     private DefaultTableModel dtm;
+    private DefaultTableModel newDtm;
     private JTable table;
+    private JLabel nameLabel;
+    private JLabel priceLabel;
+    private JLabel sortLabel;
     private JButton finishButton;
     private JButton addButton;
     private JButton deleteButton;
@@ -36,10 +42,13 @@ public class GUI extends JFrame implements ActionListener {
         table = new JTable();
         table.setModel(dtm);
         
-
         //Initialize the ArrayList
         usersList = new ArrayList<>();
-  
+
+        //Set something up
+        sortBox = new JComboBox<>(new String[]{"Name", "Amount owed"});
+        sortBox.setVisible(true);
+
         //Create the button
         addButton = new JButton("Enter"); 
         addButton.setPreferredSize(new Dimension(100, 50));
@@ -54,6 +63,11 @@ public class GUI extends JFrame implements ActionListener {
         retryButton.addActionListener(this);
         finishButton.addActionListener(this);
         deleteButton.addActionListener(this);
+        sortBox.addActionListener(this);
+        //Labels
+        nameLabel = new JLabel("Name: ");
+        priceLabel = new JLabel("Price: ");
+        sortLabel = new JLabel("Sort by: ");
 
         //Extra stuff
         JPanel inputPanel = new JPanel(new FlowLayout()); // Use FlowLayout for simplicity
@@ -61,13 +75,16 @@ public class GUI extends JFrame implements ActionListener {
         nameInput.setToolTipText("Enter a name"); // Tooltip
         priceInput = new JTextField(8);
         priceInput.setToolTipText("Enter the price of the item");
-        inputPanel.add(new JLabel("Name:"));
+        inputPanel.add(nameLabel);
         inputPanel.add(nameInput);
-        inputPanel.add(new JLabel("Price: "));
+        inputPanel.add(priceLabel);
         inputPanel.add(priceInput);
         inputPanel.add(addButton);
         inputPanel.add(deleteButton);
-        
+        inputPanel.add(sortLabel);
+        inputPanel.add(sortBox);
+        sortLabel.setVisible(false);
+        sortBox.setVisible(false);
         JPanel bottomPanel = new JPanel(new FlowLayout());
         bottomPanel.add(finishButton);
         bottomPanel.add(retryButton);
@@ -92,11 +109,15 @@ public class GUI extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Unable to calculate. Please enter at least one entry.", "Input Error", JOptionPane.WARNING_MESSAGE);
             } else {
                 displayResults();
+                sortBox.setVisible(true);
             }
         } else if (e.getSource() == retryButton) {
             resetScreen();
+        
         } else if (e.getSource() == deleteButton) {
             deleteEntry();
+        } else if (e.getSource() == sortBox) {
+            sortEntries();
         }
     }
 
@@ -108,9 +129,47 @@ public class GUI extends JFrame implements ActionListener {
         finishButton.setVisible(true);
         retryButton.setVisible(false);
         nameInput.setVisible(true);
+        deleteButton.setVisible(true);
         priceInput.setVisible(true);
+        nameLabel.setVisible(true);
+        priceLabel.setVisible(true);
+        sortLabel.setVisible(false);
+        sortBox.setVisible(false);
     }
+    //Finish this later
+    private void sortEntries() {
+        String selectedType = (String)sortBox.getSelectedItem();
+        if (selectedType.equals("Name")) {
+            Collections.sort(usersList, new Comparator<User>() {
+                public int compare(User u1, User u2) {
+                    return u1.getName().compareTo(u2.getName());
+                }
+            });
+            newDtm = new DefaultTableModel(afterColumnNames, 0);
+            for (User user : usersList) {
+                String[] finalAllUsers = {user.getName(), user.getStringPrice(), user.funnyMessage()};
+                newDtm.addRow(finalAllUsers);
+            }            
+            table.setModel(newDtm);
 
+            System.out.println(usersList);
+            
+        } else if (selectedType.equals("Amount owed")) {
+            Collections.sort(usersList, new Comparator<User>() {
+                public int compare(User u1, User u2) {
+                    return Double.compare(u1.getPrice(), u2.getPrice());
+                }
+            });
+            newDtm = new DefaultTableModel(afterColumnNames, 0);
+            for (User user : usersList) {
+                String[] finalAllUsers = {user.getName(), user.getStringPrice(), user.funnyMessage()};
+                newDtm.addRow(finalAllUsers);
+            }
+            table.setModel(newDtm);
+            System.out.println(usersList);
+
+        }
+    }
     private void addUser() {
         String username = "";
         Double price = 0.0;   
@@ -167,6 +226,10 @@ public class GUI extends JFrame implements ActionListener {
         }
     }
     private void displayResults() {
+        nameLabel.setVisible(false);
+        priceLabel.setVisible(false);
+        sortLabel.setVisible(true);
+        sortBox.setVisible(true);
         for (int i = 0; i < usersList.size(); i++) {
             User user = usersList.get(i);
             for (int j = i + 1; j < usersList.size(); j++) {
@@ -182,7 +245,7 @@ public class GUI extends JFrame implements ActionListener {
                 }
             }
         }
-        DefaultTableModel newDtm = new DefaultTableModel(afterColumnNames, 0);
+        newDtm = new DefaultTableModel(afterColumnNames, 0);
         for (User user : usersList) {
             String[] finalAllUsers = {user.getName(), user.getStringPrice(), user.funnyMessage()};
             newDtm.addRow(finalAllUsers);
