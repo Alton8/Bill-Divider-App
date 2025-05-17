@@ -10,9 +10,10 @@ public class AverageSpender extends User {
 
         quotes.add("Reasonable… for now 👀");
         quotes.add("You didn’t break the bank. You just nudged it a little.");
-        quotes.add("You might be the smartest person in the group");
+        quotes.add("Balanced budget, unbalanced life.");
         quotes.add("You’re the reason banks invented the ‘average spender’ category.");
         quotes.add("Congrats! You spent a totally reasonable amount — according to you.");
+        quotes.add("Respectable spend. Boring, but respectable.");
     
 
     }
@@ -22,7 +23,8 @@ public class AverageSpender extends User {
     }
 
     public String funnyMessage() {
-        return quotes.get((int)(Math.random() * 6));
+        int randomIndex = (int)(Math.random()*6);
+        return quotes.get(randomIndex);
     }
     
 
