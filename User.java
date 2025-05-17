@@ -16,7 +16,10 @@ public abstract class User {
     public double getPrice() {
         return price;
     }
-
+    
+    public String getStringPrice() {
+        return "$" + price + "";
+    }
     public void increasePrice(double amount) {
         price+=amount;
     }
