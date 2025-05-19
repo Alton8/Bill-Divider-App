@@ -32,7 +32,7 @@ public class GUI extends JFrame implements ActionListener {
 
     public GUI() {
 
-        super("Simple GUI");
+        super("Bill Calculator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Close operation
         setSize(500, 400); // Increased window size
         setLocationRelativeTo(null); // Center the window
