@@ -1,8 +1,10 @@
+import java.text.DecimalFormat;
 
 public abstract class User {
 
     String name;
     double price;
+    DecimalFormat df = new DecimalFormat("#.00"); 
 
     public User(String inputName, double inputPrice) {
         name = inputName;
@@ -18,7 +20,7 @@ public abstract class User {
     }
     
     public String getStringPrice() {
-        return "$" + price + "";
+        return "$" + df.format(price);
     }
     public void increasePrice(double amount) {
         price+=amount;
