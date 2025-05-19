@@ -36,7 +36,7 @@ public class GUI extends JFrame implements ActionListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Close operation
         setSize(500, 400); // Increased window size
         setLocationRelativeTo(null); // Center the window
-        
+
         //Youtube Tutorial
         dtm = new DefaultTableModel(beforeColumnNames, 0);
         table = new JTable();
@@ -51,13 +51,13 @@ public class GUI extends JFrame implements ActionListener {
 
         //Create the button
         addButton = new JButton("Enter"); 
-        addButton.setPreferredSize(new Dimension(100, 50));
+        addButton.setPreferredSize(new Dimension(100, 40));
         retryButton = new JButton("Retry");
         retryButton.setPreferredSize(new Dimension(100,50));
         finishButton = new JButton("Finish");
         finishButton.setPreferredSize(new Dimension(100, 50));
         deleteButton = new JButton("Delete");
-        deleteButton.setPreferredSize(new Dimension(100,50));
+        deleteButton.setPreferredSize(new Dimension(100,40));
 
         addButton.addActionListener(this);
         retryButton.addActionListener(this);
@@ -152,7 +152,6 @@ public class GUI extends JFrame implements ActionListener {
             }            
             table.setModel(newDtm);
 
-            System.out.println(usersList);
             
         } else if (selectedType.equals("Amount owed")) {
             Collections.sort(usersList, new Comparator<User>() {
@@ -166,7 +165,6 @@ public class GUI extends JFrame implements ActionListener {
                 newDtm.addRow(finalAllUsers);
             }
             table.setModel(newDtm);
-            System.out.println(usersList);
 
         }
     }
@@ -221,6 +219,7 @@ public class GUI extends JFrame implements ActionListener {
         }
     }
     private void displayResults() {
+        double totalPrice = 0;
         nameLabel.setVisible(false);
         priceLabel.setVisible(false);
         sortLabel.setVisible(true);
@@ -240,10 +239,32 @@ public class GUI extends JFrame implements ActionListener {
                 }
             }
         }
+        for (int i = 0; i<usersList.size(); i++) {
+            String name = usersList.get(i).getName();
+            double price = usersList.get(i).getPrice();
+            if (price > 0 && price < 15) {
+                                        
+                LightSpender user1 = new LightSpender(name, price);
+                usersList.set(i, user1);
+
+
+            } else if (price >= 15 && price < 40) {
+
+                AverageSpender user2 = new AverageSpender(name, price);
+                usersList.set(i, user2);
+
+            } else if (price >= 40) {
+                BigSpender user3 = new BigSpender(name, price);
+                usersList.set(i,user3);
+                
+            }
+        }
         newDtm = new DefaultTableModel(afterColumnNames, 0);
         for (User user : usersList) {
             String[] finalAllUsers = {user.getName(), user.getStringPrice(), user.funnyMessage()};
             newDtm.addRow(finalAllUsers);
+            totalPrice+=user.getPrice();
+
         }
         table.setModel(newDtm);
         finishButton.setVisible(false);
@@ -252,6 +273,7 @@ public class GUI extends JFrame implements ActionListener {
         deleteButton.setVisible(false);
         nameInput.setVisible(false);
         priceInput.setVisible(false);
+        System.out.println(totalPrice);
     }
 
     private void updateScreen() {
