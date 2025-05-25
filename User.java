@@ -1,14 +1,15 @@
 import java.text.DecimalFormat;
 
 public abstract class User {
-
-    String name;
-    double price;
+    private String name;
+    private double price;
+    private String message; 
     DecimalFormat df = new DecimalFormat("#.00"); 
 
-    public User(String inputName, double inputPrice) {
-        name = inputName;
-        price = inputPrice;
+
+    public User(String name, double price) {
+        this.name = name;
+        this.price = price;
     }
 
     public String getName() {
@@ -18,14 +19,22 @@ public abstract class User {
     public double getPrice() {
         return price;
     }
-    
+
     public String getStringPrice() {
         return "$" + df.format(price);
     }
-    public void increasePrice(double amount) {
-        price+=amount;
+
+    public void increasePrice(double extra) {
+        this.price += extra;
+    }
+
+    public String funnyMessage() {
+        return message;
+    }
+
+    public void setFunnyMessage(String message) {
+        this.message = message;
     }
 
     public abstract String toString();
-    public abstract String funnyMessage();
 }
