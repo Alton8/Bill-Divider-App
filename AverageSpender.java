@@ -1,31 +1,32 @@
 import java.util.ArrayList;
 
 public class AverageSpender extends User {
+    private ArrayList<String> quotes;
 
-    private ArrayList<String> quotes = new ArrayList<String>();
-    public AverageSpender(String inputName, double inputPrice) {
+    public AverageSpender(String name, double price) {
+        super(name, price);
 
-        super(inputName, inputPrice);
         quotes = new ArrayList<>();
+        quotes.add("You’re walking the line between budgeting and ballin’.");
+        quotes.add("Not frugal, not flashy — just fashionably average.");
+        quotes.add("You spent " + getStringPrice() + " like a responsible person. Mostly.");
+        quotes.add("That was a decent treat. Your wallet isn’t mad. Yet.");
+        quotes.add("Just enough to feel something. Not enough to feel guilty.");
 
-        quotes.add("Reasonable… for now 👀");
-        quotes.add("You didn’t break the bank. You just nudged it a little.");
-        quotes.add("Balanced budget, unbalanced life.");
-        quotes.add("You’re the reason banks invented the ‘average spender’ category.");
-        quotes.add("Congrats! You spent a totally reasonable amount — according to you.");
-        quotes.add("Respectable spend. Boring, but respectable.");
-    
-
+        int randomIndex = (int)(Math.random() * quotes.size());
+        setFunnyMessage(quotes.get(randomIndex)); // Store once
     }
-
-    public String toString() {
-        return name + " owes about " + price + " dollars.";
+    public AverageSpender(String name, double price, String funnyMessage) {
+        super(name, price);
+        setFunnyMessage(funnyMessage); // Use existing message
     }
-
+    @Override
     public String funnyMessage() {
-        int randomIndex = (int)(Math.random()*6);
-        return quotes.get(randomIndex);
+        return super.funnyMessage();
     }
-    
 
+    @Override
+    public String toString() {
+        return getName() + " spent a reasonable " + getStringPrice() + ".";
+    }
 }
