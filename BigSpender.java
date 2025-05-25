@@ -1,27 +1,34 @@
 import java.util.ArrayList;
 
 public class BigSpender extends User {
-
     private ArrayList<String> quotes;
 
-    public BigSpender(String inputName, double inputPrice) {
+    public BigSpender(String name, double price) {
+        super(name, price);
 
-        super(inputName, inputPrice);
         quotes = new ArrayList<>();
         quotes.add("You treat your bank account like it wronged you in a past life.");
         quotes.add("Good news: You’re stimulating the economy. Bad news: It’s just your economy.");
-        quotes.add("You spent " + this.getStringPrice() + " on... honestly, we don’t even know. Neither do you.");
+        quotes.add("You spent " + getStringPrice() + " on... honestly, we don’t even know.");
         quotes.add("We ran the numbers and... yikes.");
         quotes.add("Were you feeding yourself or opening a small bistro?");
         quotes.add("You didn’t split the bill — you became the bill.");
+
+        int randomIndex = (int)(Math.random() * quotes.size());
+        setFunnyMessage(quotes.get(randomIndex)); // Store once in constructor
+    }
+    public BigSpender(String name, double price, String funnyMessage) {
+        super(name, price);
+        setFunnyMessage(funnyMessage); // Use existing message
     }
 
-    public String toString() {
-        return name + " owes a whole " + price + " dollars.";
-    }
-    
+    @Override
     public String funnyMessage() {
-        int randomIndex = (int)(Math.random()*6);
-        return quotes.get(randomIndex);
+        return super.funnyMessage();
+    }
+
+    @Override
+    public String toString() {
+        return getName() + " owes a whole " + getStringPrice() + " dollars.";
     }
 }
