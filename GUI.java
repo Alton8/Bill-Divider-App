@@ -32,9 +32,9 @@ public class GUI extends JFrame implements ActionListener {
 
     public GUI() {
 
-        super("Bill Calculator");
+        super("Who Owes What?");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Close operation
-        setSize(500, 400); // Increased window size
+        setSize(1000, 400); // Increased window size
         setLocationRelativeTo(null); // Center the window
 
         //Youtube Tutorial
@@ -120,7 +120,7 @@ public class GUI extends JFrame implements ActionListener {
             sortEntries();
         }
     }
-
+    //Resets the screen to its default state
     private void resetScreen() {
         dtm.setRowCount(0);
         usersList.clear();
@@ -136,7 +136,7 @@ public class GUI extends JFrame implements ActionListener {
         sortLabel.setVisible(false);
         sortBox.setVisible(false);
     }
-    //Finish this later
+    //Sorts the entries in the list by either name or amount owed
     private void sortEntries() {
         String selectedType = (String)sortBox.getSelectedItem();
         if (selectedType.equals("Name")) {
@@ -219,7 +219,7 @@ public class GUI extends JFrame implements ActionListener {
         }
     }
     private void displayResults() {
-        double totalPrice = 0;
+        String finalResult = "";
         nameLabel.setVisible(false);
         priceLabel.setVisible(false);
         sortLabel.setVisible(true);
@@ -234,38 +234,33 @@ public class GUI extends JFrame implements ActionListener {
                     user.increasePrice(currentUser.getPrice());
                     // Remove the duplicate user
                     usersList.remove(j);
-                    // Adjust the loop counter since we've removed an element
                     j--; 
                 }
             }
         }
-        for (int i = 0; i<usersList.size(); i++) {
-            String name = usersList.get(i).getName();
-            double price = usersList.get(i).getPrice();
+       for (int i = 0; i < usersList.size(); i++) {
+            User oldUser = usersList.get(i);
+            String name = oldUser.getName();
+            double price = oldUser.getPrice();
+            String oldMsg = oldUser.funnyMessage(); // preserve old message
+
             if (price > 0 && price < 15) {
-                                        
-                LightSpender user1 = new LightSpender(name, price);
-                usersList.set(i, user1);
-
-
+                usersList.set(i, new LightSpender(name, price, oldMsg));
             } else if (price >= 15 && price < 40) {
-
-                AverageSpender user2 = new AverageSpender(name, price);
-                usersList.set(i, user2);
-
-            } else if (price >= 40) {
-                BigSpender user3 = new BigSpender(name, price);
-                usersList.set(i,user3);
-                
+                usersList.set(i, new AverageSpender(name, price, oldMsg));
+            } else {
+                usersList.set(i, new BigSpender(name, price, oldMsg));
             }
         }
+
         newDtm = new DefaultTableModel(afterColumnNames, 0);
         for (User user : usersList) {
+            finalResult += user.toString() + "\n";
             String[] finalAllUsers = {user.getName(), user.getStringPrice(), user.funnyMessage()};
             newDtm.addRow(finalAllUsers);
-            totalPrice+=user.getPrice();
 
         }
+
         table.setModel(newDtm);
         finishButton.setVisible(false);
         addButton.setVisible(false);
@@ -273,7 +268,8 @@ public class GUI extends JFrame implements ActionListener {
         deleteButton.setVisible(false);
         nameInput.setVisible(false);
         priceInput.setVisible(false);
-        System.out.println(totalPrice);
+        JOptionPane.showMessageDialog(this, finalResult, "Results", JOptionPane.PLAIN_MESSAGE);
+
     }
 
     private void updateScreen() {
