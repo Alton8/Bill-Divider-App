@@ -1,34 +1,32 @@
 import java.util.ArrayList;
 
-
 public class LightSpender extends User {
-
     private ArrayList<String> quotes;
 
-    public LightSpender(String inputName, double inputPrice) {
+    public LightSpender(String name, double price) {
+        super(name, price);
 
-        super(inputName, inputPrice);
         quotes = new ArrayList<>();
+        quotes.add("Thrifty legend. You spent less than a large coffee.");
+        quotes.add("You treated yourself... very lightly.");
+        quotes.add("Your wallet didn’t even notice this purchase.");
+        quotes.add("You spent " + this.getStringPrice() + " — you’re practically a financial guru.");
+        quotes.add("You’re the kind of person coupon sites dream about.");
 
-        quotes.add("Cheep, cheep cheep cheep! Oh is that a bird? Oh no sorry that's just you");
-        quotes.add("Nice.");
-        quotes.add("Contributing spiritually, but not financially");
-        quotes.add("Big spender alert! Just kidding, that was someone else.");
-        quotes.add("Honestly, just say you weren’t hungry next time.");
-        quotes.add("Not sure if that was dinner or a vending machine run.");
-
+        int randomIndex = (int)(Math.random() * quotes.size());
+        setFunnyMessage(quotes.get(randomIndex)); // Store once
     }
-
-    public String toString() {
-
-        return name + " owes a mere " + price + " dollars.";        
-
+    public LightSpender(String name, double price, String funnyMessage) {
+        super(name, price);
+        setFunnyMessage(funnyMessage); // Use existing message
     }
-
+    @Override
     public String funnyMessage() {
-        int randomIndex = (int)(Math.random() * 6);
+        return super.funnyMessage();
+    }
 
-        return quotes.get(randomIndex);
-
+    @Override
+    public String toString() {
+        return getName() + " only spent " + getStringPrice() + ". Nice!";
     }
 }
