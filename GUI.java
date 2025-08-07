@@ -1,14 +1,13 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
+
 import javax.swing.table.DefaultTableModel;
 import java.util.Collections;
 import java.util.Comparator;
 import java.text.DecimalFormat;
-
-import java.util.ArrayList;
-import java.awt.event.ActionListener;
 // import java.util.concurrent.Flow;
+import java.awt.event.*;
+import java.util.ArrayList;
 
 public class GUI extends JFrame implements ActionListener {
     
@@ -64,6 +63,7 @@ public class GUI extends JFrame implements ActionListener {
         deleteButton.setPreferredSize(new Dimension(100,40));
 
         addButton.addActionListener(this);
+
         retryButton.addActionListener(this);
         finishButton.addActionListener(this);
         deleteButton.addActionListener(this);
@@ -95,7 +95,22 @@ public class GUI extends JFrame implements ActionListener {
         retryButton.setVisible(false);
 
         setLayout(new BorderLayout());
-
+        priceInput.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    addUser();
+                }
+            }
+        });
+        nameInput.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    addUser();
+                }
+            }
+        });
         add(inputPanel, BorderLayout.NORTH); // Input at the top
         add(new JScrollPane(table), BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH); // Finish button on bottom
@@ -121,6 +136,11 @@ public class GUI extends JFrame implements ActionListener {
             deleteEntry();
         } else if (e.getSource() == sortBox) {
             sortEntries();
+        } 
+    }
+    public void keyReleased(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+            addUser();
         }
     }
     //Resets the screen to its default state
@@ -190,19 +210,23 @@ public class GUI extends JFrame implements ActionListener {
             User newUser = null;
             try {
                 double price = Double.parseDouble(stringPrice);
-                if (price > 0 && price < 15) {               
-                    newUser = new LightSpender(username, price);
-                    usersList.add(newUser);
-                } else if (price >= 15 && price < 40) {
-                    newUser = new AverageSpender(username, price);
-                    usersList.add(newUser);
+                if (price < 0) {
+                    JOptionPane.showMessageDialog(this, "Invalid input. Price cannot be negative", "User Error", JOptionPane.WARNING_MESSAGE);
+                    return;  
+                } else {
+                    if (price > 0 && price < 15) {               
+                        newUser = new LightSpender(username, price);
+                        usersList.add(newUser);
+                    } else if (price >= 15 && price < 40) {
+                        newUser = new AverageSpender(username, price);
+                        usersList.add(newUser);
 
-                } else if (price >= 40) {
-                    newUser = new BigSpender(username, price);
-                    usersList.add(newUser);
-                    
+                    } else if (price >= 40) {
+                        newUser = new BigSpender(username, price);
+                        usersList.add(newUser);
+                        
+                    }
                 }
-               
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Invalid value. Please enter a number.", "Input Error", JOptionPane.WARNING_MESSAGE);
                 return; // Stop adding task if priority is invalid
@@ -215,14 +239,19 @@ public class GUI extends JFrame implements ActionListener {
         priceInput.setText(""); // Clear input fields
     }
     private void optionalTip() {
+        cleanUserEntries();
+        String initialDisplay = "";
         for (User user : usersList) {
-            totalPrice += user.getPrice();
+            initialDisplay += user.toString() + "\n";
         }
-        int yes_no = JOptionPane.showConfirmDialog(this, "Would you look to add a tip? ", "Tip option", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+        int yes_no = JOptionPane.showConfirmDialog(this, initialDisplay + "Would you look to add a tip? ", "Tip option", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
         if (yes_no == JOptionPane.YES_OPTION) {
             String input = JOptionPane.showInputDialog("Enter the percentage that you would look to tip");
             try {
                 int percentage = Integer.parseInt(input);
+                for (User user : usersList) {
+                    totalPrice += user.getPrice();
+                }
                 tip = totalPrice * percentage * 0.01;
                 System.out.println(tip);
                 totalPrice += tip;
@@ -231,6 +260,9 @@ public class GUI extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Invalid percentage. Please enter a number.", "Input Error", JOptionPane.WARNING_MESSAGE);
             }
         } else if (yes_no == JOptionPane.NO_OPTION) {
+            for (User user : usersList) {
+                totalPrice += user.getPrice();
+            }
             displayResults();
         }
 
@@ -250,14 +282,7 @@ public class GUI extends JFrame implements ActionListener {
             JOptionPane.showMessageDialog(this, "Please select an entry to delete.", "Selection Error", JOptionPane.WARNING_MESSAGE);
         }
     }
-    private void displayResults() {
-        String finalResult = "";
-        double tip_per_user = tip / usersList.size();
-
-        nameLabel.setVisible(false);
-        priceLabel.setVisible(false);
-        sortLabel.setVisible(true);
-        sortBox.setVisible(true);
+    private void cleanUserEntries() {
         for (int i = 0; i < usersList.size(); i++) {
             User user = usersList.get(i);
             for (int j = i + 1; j < usersList.size(); j++) {
@@ -272,8 +297,19 @@ public class GUI extends JFrame implements ActionListener {
                 }
             }
         }
-       for (int i = 0; i < usersList.size(); i++) {
 
+    }
+    private void displayResults() {
+        String finalResult = "";
+
+        nameLabel.setVisible(false);
+        priceLabel.setVisible(false);
+        sortLabel.setVisible(true);
+        sortBox.setVisible(true);
+      
+        double tip_per_user = tip / usersList.size();
+
+        for (int i = 0; i < usersList.size(); i++) {
             usersList.get(i).increasePrice(tip_per_user);
 
             User oldUser = usersList.get(i);
@@ -288,7 +324,6 @@ public class GUI extends JFrame implements ActionListener {
                 usersList.set(i, new BigSpender(name, price));
             }
         }
-
         newDtm = new DefaultTableModel(afterColumnNames, 0);
         for (User user : usersList) {
             String userPrice = user.getStringPrice();
@@ -307,7 +342,7 @@ public class GUI extends JFrame implements ActionListener {
             newDtm.addRow(finalAllUsers);
 
         }
-        finalResult += "Everyone spent " + df.format(totalPrice) + " in total!";
+        finalResult += "Everyone spent $" + df.format(totalPrice) + " in total!";
         table.setModel(newDtm);
         finishButton.setVisible(false);
         addButton.setVisible(false);
