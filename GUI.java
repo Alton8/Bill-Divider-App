@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.table.DefaultTableModel;
 import java.util.Collections;
 import java.util.Comparator;
+import java.text.DecimalFormat;
 
 import java.util.ArrayList;
 import java.awt.event.ActionListener;
@@ -15,10 +16,10 @@ public class GUI extends JFrame implements ActionListener {
 
     String[] beforeColumnNames = new String[]{"Name", "Item Price"};
     String[] afterColumnNames = new String[]{"Name", "Total Owed", "Analysis"};
+    DecimalFormat df = new DecimalFormat("#.00"); 
 
     private double totalPrice;
     private double tip;
-    private int tip_percent;
     private JComboBox<String> sortBox;
     private DefaultTableModel dtm;
     private DefaultTableModel newDtm;
@@ -112,8 +113,6 @@ public class GUI extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Unable to calculate. Please enter at least one entry.", "Input Error", JOptionPane.WARNING_MESSAGE);
             } else {
                 optionalTip();
-                displayResults();
-                sortBox.setVisible(true);
             }
         } else if (e.getSource() == retryButton) {
             resetScreen();
@@ -128,6 +127,8 @@ public class GUI extends JFrame implements ActionListener {
     private void resetScreen() {
         dtm.setRowCount(0);
         usersList.clear();
+        totalPrice = 0;
+        tip = 0;
         table.setModel(dtm);
         addButton.setVisible(true);
         finishButton.setVisible(true);
@@ -186,7 +187,6 @@ public class GUI extends JFrame implements ActionListener {
             JOptionPane.showMessageDialog(this, "Invalid input. Please enter a price", "User Error", JOptionPane.WARNING_MESSAGE);
             return;  
         }
-// Borrowed Mr Crow's code
             User newUser = null;
             try {
                 double price = Double.parseDouble(stringPrice);
@@ -210,21 +210,30 @@ public class GUI extends JFrame implements ActionListener {
         
 
         updateScreen();
+
         nameInput.setText(""); // Clear input fields
         priceInput.setText(""); // Clear input fields
     }
     private void optionalTip() {
+        for (User user : usersList) {
+            totalPrice += user.getPrice();
+        }
         int yes_no = JOptionPane.showConfirmDialog(this, "Would you look to add a tip? ", "Tip option", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
         if (yes_no == JOptionPane.YES_OPTION) {
             String input = JOptionPane.showInputDialog("Enter the percentage that you would look to tip");
             try {
                 int percentage = Integer.parseInt(input);
-                tip = totalPrice * percentage * 0.001;
+                tip = totalPrice * percentage * 0.01;
+                System.out.println(tip);
                 totalPrice += tip;
+                displayResults();
             } catch (Exception e) {                
                 JOptionPane.showMessageDialog(this, "Invalid percentage. Please enter a number.", "Input Error", JOptionPane.WARNING_MESSAGE);
             }
+        } else if (yes_no == JOptionPane.NO_OPTION) {
+            displayResults();
         }
+
     }
     private void deleteEntry() {
         int selectedIndex = table.getSelectedRow();
@@ -243,6 +252,8 @@ public class GUI extends JFrame implements ActionListener {
     }
     private void displayResults() {
         String finalResult = "";
+        double tip_per_user = tip / usersList.size();
+
         nameLabel.setVisible(false);
         priceLabel.setVisible(false);
         sortLabel.setVisible(true);
@@ -262,28 +273,41 @@ public class GUI extends JFrame implements ActionListener {
             }
         }
        for (int i = 0; i < usersList.size(); i++) {
+
+            usersList.get(i).increasePrice(tip_per_user);
+
             User oldUser = usersList.get(i);
             String name = oldUser.getName();
             double price = oldUser.getPrice();
-            String oldMsg = oldUser.funnyMessage(); // preserve old message
 
             if (price > 0 && price < 15) {
-                usersList.set(i, new LightSpender(name, price, oldMsg));
+                usersList.set(i, new LightSpender(name, price));
             } else if (price >= 15 && price < 40) {
-                usersList.set(i, new AverageSpender(name, price, oldMsg));
+                usersList.set(i, new AverageSpender(name, price));
             } else {
-                usersList.set(i, new BigSpender(name, price, oldMsg));
+                usersList.set(i, new BigSpender(name, price));
             }
         }
 
         newDtm = new DefaultTableModel(afterColumnNames, 0);
         for (User user : usersList) {
+            String userPrice = user.getStringPrice();
+            String userType = user.getType();
+            switch (userType) {
+                case "LightSpender":
+                    user.addFunnyMessage("You spent " + userPrice + " — you’re practically a financial guru.");
+                case "AverageSpender":
+                    user.addFunnyMessage("You spent " + userPrice + " like a responsible person. Mostly.");
+                case "BigSpender":
+                    user.addFunnyMessage("You spent " + userPrice + " on... honestly, we don’t even know.");
+            }
+
             finalResult += user.toString() + "\n";
             String[] finalAllUsers = {user.getName(), user.getStringPrice(), user.funnyMessage()};
             newDtm.addRow(finalAllUsers);
 
         }
-
+        finalResult += "Everyone spent " + df.format(totalPrice) + " in total!";
         table.setModel(newDtm);
         finishButton.setVisible(false);
         addButton.setVisible(false);
