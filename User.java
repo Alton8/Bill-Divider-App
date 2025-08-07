@@ -1,11 +1,11 @@
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 public abstract class User {
-    private String name;
+    private final String name;
     private double price;
     private String message; 
     DecimalFormat df = new DecimalFormat("#.00"); 
-
 
     public User(String name, double price) {
         this.name = name;
@@ -35,6 +35,9 @@ public abstract class User {
     public void setFunnyMessage(String message) {
         this.message = message;
     }
-
+    public abstract ArrayList<String> getQuotes();
+    public abstract void addFunnyMessage(String message);
+    public abstract String getType();
+    @Override
     public abstract String toString();
 }
