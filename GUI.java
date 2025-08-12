@@ -309,6 +309,7 @@ public class GUI extends JFrame implements ActionListener {
       
         double tip_per_user = tip / usersList.size();
 
+        //Reassigning users based on their amount spent
         for (int i = 0; i < usersList.size(); i++) {
             usersList.get(i).increasePrice(tip_per_user);
 
@@ -325,6 +326,8 @@ public class GUI extends JFrame implements ActionListener {
             }
         }
         newDtm = new DefaultTableModel(afterColumnNames, 0);
+
+        //Update the users with a new quote
         for (User user : usersList) {
             String userPrice = user.getStringPrice();
             String userType = user.getType();
@@ -355,12 +358,19 @@ public class GUI extends JFrame implements ActionListener {
     }
 
     private void updateScreen() {
-
         dtm.setRowCount(0);
+
+        //Sorts the rows by alphabetical order 
+        Collections.sort(usersList, new Comparator<User>() {
+            public int compare(User u1, User u2) {
+                return u1.getName().compareTo(u2.getName());
+            }
+        });
         for (User user : usersList) {
-            String[] allUsers = {user.getName(), user.getStringPrice()};
-            dtm.addRow(allUsers);
-        }  
+            String[] finalAllUsers = {user.getName(), user.getStringPrice()};
+            dtm.addRow(finalAllUsers);
+        }            
+        table.setModel(dtm); 
 
     }
     public static void main(String[] args) { 
