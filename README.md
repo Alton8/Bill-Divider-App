@@ -6,4 +6,4 @@ Allow users to calculate how much each person in a party owes when paying for th
 
 How to run it?
 
-Download all of the files, extract to the desired location of your choice, and run GUI.java. Make sure you have Java JDK installed!
+Download all of the files, extract to the desired location of your choice, and run GUI.java.
