@@ -9,3 +9,13 @@ Fast, accurate splits – enter items/amounts and get each person’s share auto
 Customizable tipping – by percentage or dollar amount; per-bill or per-person (configurable)
 
 Input safety – validation and error messages to prevent bad data (e.g., negative amounts)
+
+Usage
+
+Create people: add all participants (e.g., Alice, Bob, Charlie).
+
+Add expenses: enter amount, payer, and recipients (one or many).
+
+Set tip: choose tip percentage or fixed amount.
+
+Review summary: see per-person totals and a summary of how much they spent.
