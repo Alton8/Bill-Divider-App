@@ -1,9 +1,11 @@
-# Project
+# Bill Divider App
 
-Final project turned into random project
+A desktop Java + Swing application that automates group expense splitting with customizable tips, per-person management, and clear settlement summaries. Built with an emphasis on modular OOP design, input validation, and usability.
 
-Allow users to calculate how much each person in a party owes when paying for the bill. In addition it provides a (funny) message based off how much an individual spent.
+✨ Features
 
-How to run it?
+Fast, accurate splits – enter items/amounts and get each person’s share automatically
 
-Download all of the files, extract to the desired location of your choice, and run GUI.java.
+Customizable tipping – by percentage or dollar amount; per-bill or per-person (configurable)
+
+Input safety – validation and error messages to prevent bad data (e.g., negative amounts)
