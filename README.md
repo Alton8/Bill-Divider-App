@@ -46,4 +46,4 @@ See each person’s:
 
 ## 📤 Export results
 
-On the final summary screen, click **Export** to save a `.csv` or `.txt` summary of everyone’s totals (optional enhancement).
+On the final summary screen, click **Export** to save a `.csv` summary of everyone’s totals (optional enhancement).
