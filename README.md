@@ -27,7 +27,6 @@ cd Bill-Divider-App
 javac -d bin src/**/*.java
 java -cp bin GUI
 (Or simply open the project in IntelliJ / Eclipse and run the Main class.)
-
 # 🧩 Usage Guide
 
 1. Add participants (e.g., Alice, Bob, Charlie) using the “Add Person” button.
