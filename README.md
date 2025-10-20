@@ -2,7 +2,7 @@
 
 A desktop Java + Swing application that automates group expense splitting with customizable tips, per-person management, and clear settlement summaries. Built with an emphasis on modular OOP design, input validation, and usability.
 
-✨ ##Features
+## Features
 
 🧮 Fast, accurate splits — Enter items and amounts, and the app automatically divides costs among selected people.
 
