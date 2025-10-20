@@ -30,7 +30,7 @@ Or open the project in IntelliJ/Eclipse and run the class with `public static vo
 
 ## 🧩 Usage Guide
 
-1. **Add participants** (e.g., Alice, Bob, Charlie) using the “Add Person” button.
+1. **Add participants** (e.g., Alice, Bob, Charlie) using the “Enter” button.
 2. **Add expenses** with amount, payer, and recipients.
 
 ## 💫 Set tip
