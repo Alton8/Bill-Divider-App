@@ -22,7 +22,7 @@ cd Bill-Divider-App
 
 ### 2) Compile and run
 ```bash
-javac -d bin src/**/*.java
+javac -d bin src/GUI.java
 java -cp bin GUI
 # Or open the project in IntelliJ/Eclipse and run the class with `public static void main(...)`.
 ```
