@@ -28,30 +28,28 @@ javac -d bin src/**/*.java
 java -cp bin GUI
 (Or simply open the project in IntelliJ / Eclipse and run the Main class.)
 
-## 🧩 Usage Guide
+# 🧩 Usage Guide
 
 1. Add participants (e.g., Alice, Bob, Charlie) using the “Add Person” button.
 
 2. Add expenses
 
-💫 Set tip
+## 💫 Set tip
 
 Choose a tip:
 
-By percentage (e.g., 15%)
+- By **percentage** (e.g., 15%)
 
-By fixed amount (e.g., $10)
+- By **fixed amount** (e.g., $10)
 
-Applied per-person or per-bill
-
-📋 Review summary
+## 📋 Review summary
 
 See each person’s:
 
-Total spent
+- Total spent
 
-Amount owed
+- Amount owed
 
-📤 Export results
+## 📤 Export results
 
 On the final summary screen, click Export to save a .csv or .txt summary of everyone’s totals (optional enhancement).
