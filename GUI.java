@@ -1,12 +1,13 @@
 import javax.swing.*;
 import java.awt.*;
-
+import java.io.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.Collections;
 import java.util.Comparator;
 import java.text.DecimalFormat;
 // import java.util.concurrent.Flow;
 import java.awt.event.*;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class GUI extends JFrame implements ActionListener {
@@ -28,6 +29,7 @@ public class GUI extends JFrame implements ActionListener {
     private JLabel sortLabel;
     private JButton finishButton;
     private JButton addButton;
+    private JButton exportButton;
     private JButton deleteButton;
     private JButton retryButton;
     private JTextField nameInput;
@@ -56,14 +58,16 @@ public class GUI extends JFrame implements ActionListener {
         addButton = new JButton("Enter"); 
         addButton.setPreferredSize(new Dimension(100, 40));
         retryButton = new JButton("Retry");
-        retryButton.setPreferredSize(new Dimension(100,50));
+        retryButton.setPreferredSize(new Dimension(100,40));
         finishButton = new JButton("Finish");
-        finishButton.setPreferredSize(new Dimension(100, 50));
+        finishButton.setPreferredSize(new Dimension(100, 40));
         deleteButton = new JButton("Delete");
         deleteButton.setPreferredSize(new Dimension(100,40));
+        exportButton = new JButton("Export Results as CSV");
+        exportButton.setPreferredSize(new Dimension(200,40));
 
         addButton.addActionListener(this);
-
+        exportButton.addActionListener(this);
         retryButton.addActionListener(this);
         finishButton.addActionListener(this);
         deleteButton.addActionListener(this);
@@ -84,16 +88,18 @@ public class GUI extends JFrame implements ActionListener {
         inputPanel.add(priceLabel);
         inputPanel.add(priceInput);
         inputPanel.add(addButton);
-        inputPanel.add(deleteButton);
         inputPanel.add(sortLabel);
         inputPanel.add(sortBox);
         sortLabel.setVisible(false);
         sortBox.setVisible(false);
         JPanel bottomPanel = new JPanel(new FlowLayout());
+        bottomPanel.add(deleteButton);
+        bottomPanel.add(Box.createHorizontalStrut(20)); // Adds 20 pixels of horizontal space
         bottomPanel.add(finishButton);
+        bottomPanel.add(exportButton);
         bottomPanel.add(retryButton);
         retryButton.setVisible(false);
-
+        exportButton.setVisible(false);
         setLayout(new BorderLayout());
         priceInput.addKeyListener(new KeyAdapter() {
             @Override
@@ -136,7 +142,9 @@ public class GUI extends JFrame implements ActionListener {
             deleteEntry();
         } else if (e.getSource() == sortBox) {
             sortEntries();
-        } 
+        } else if (e.getSource() == exportButton) {
+            exportResults();
+        }
     }
     public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -153,6 +161,7 @@ public class GUI extends JFrame implements ActionListener {
         addButton.setVisible(true);
         finishButton.setVisible(true);
         retryButton.setVisible(false);
+        exportButton.setVisible(false);
         nameInput.setVisible(true);
         deleteButton.setVisible(true);
         priceInput.setVisible(true);
@@ -350,13 +359,32 @@ public class GUI extends JFrame implements ActionListener {
         finishButton.setVisible(false);
         addButton.setVisible(false);
         retryButton.setVisible(true);  
+        exportButton.setVisible(true);
         deleteButton.setVisible(false);
         nameInput.setVisible(false);
         priceInput.setVisible(false);
         JOptionPane.showMessageDialog(this, finalResult, "Results", JOptionPane.PLAIN_MESSAGE);
-
     }
-
+    public void exportResults() {
+        try {
+            JTable export = table;
+            FileWriter writer = new FileWriter(new File("BillResults.csv"));
+            for (int i=0; i < 3; i++) {
+                writer.write(export.getColumnName(i) + ",");
+            }
+            writer.write("\n");
+            for (int i=0; i < export.getRowCount(); i++) {
+                for (int j = 0; j < export.getColumnCount(); j++) {
+                    writer.write(export.getValueAt(i, j).toString() + ",");
+                }
+                writer.write("\n");
+            }
+            writer.close();
+            JOptionPane.showMessageDialog(this, "Results successfully saved as .csv", "Notification", JOptionPane.PLAIN_MESSAGE);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     private void updateScreen() {
         dtm.setRowCount(0);
 
@@ -374,6 +402,9 @@ public class GUI extends JFrame implements ActionListener {
 
     }
     public static void main(String[] args) { 
+        try { 
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+        } catch(Exception ignored){}
         new GUI();
     }
 }
