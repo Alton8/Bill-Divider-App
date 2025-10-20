@@ -18,7 +18,7 @@ A desktop Java + Swing application that automates group expense splitting with c
 
 📤 Export results — Save or share the final summary as a CSV or text file (optional feature you can add).
 
-🚀 Getting Started
+## 🚀 Getting Started
 1️⃣ Clone the repository
 git clone https://github.com/Alton8/Bill-Divider-App.git
 cd Bill-Divider-App
@@ -28,22 +28,11 @@ javac -d bin src/**/*.java
 java -cp bin GUI
 (Or simply open the project in IntelliJ / Eclipse and run the Main class.)
 
-🧩 Usage Guide
-➕ Create people
+## 🧩 Usage Guide
 
-Add participants (e.g., Alice, Bob, Charlie) using the “Add Person” button.
+1. Add participants (e.g., Alice, Bob, Charlie) using the “Add Person” button.
 
-💵 Add expenses
-
-Enter:
-
-Amount
-
-Payer
-
-Recipients (can be one or many)
-
-The app will automatically calculate how much each participant owes.
+2. Add expenses
 
 💫 Set tip
 
